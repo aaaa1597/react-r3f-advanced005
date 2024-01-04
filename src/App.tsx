@@ -1,37 +1,41 @@
-import React, {useRef} from 'react';
+import React, { Suspense} from 'react';
 import './App.css';
-import { Canvas, useFrame, MeshProps  } from '@react-three/fiber'
-import * as THREE from 'three'
-import { OrbitControls, Environment } from '@react-three/drei'
+import { Canvas } from '@react-three/fiber'
+import { Stats, OrbitControls, Environment } from '@react-three/drei'
+import Eve from './Eve'
 
-const Box = (props: MeshProps) => {
-  const ref = useRef<THREE.Mesh>(null!)
-
-  useFrame((_, delta) => {
-    if( !ref.current) return
-    ref.current.rotation.x += 1 * delta
-    ref.current.rotation.y += 0.5 * delta
-  })
-
-  return (
-    <mesh {...props} ref={ref}>
-      <boxGeometry />
-      <meshNormalMaterial />
-    </mesh>
-  )
+const Loader = () => {
+  return <div className="loader"></div>
 }
 
 const App = () => {
   return (
-    <div style={{ width: "100vw", height: "75vh" }}>
-      <Canvas camera={{ position: [3, 1, 2] }}>
-        <Box position={[1, 1, 1]} name="A" />
-        <Environment preset="forest" background />
-        <OrbitControls />
-        <axesHelper args={[5]} />
-        <gridHelper />
-      </Canvas>
-    </div>
+    <>
+      <Suspense fallback={<Loader />}>
+        <div style={{ width: "100vw", height: "75vh" }}>
+          <Canvas camera={{ position: [0, 1, 2] }}>
+            <spotLight position={[2.5, 5, 5]} angle={Math.PI / 3} penumbra={0.5} castShadow shadow-mapSize-height={2048} shadow-mapSize-width={2048} intensity={Math.PI * 50} />
+            <spotLight position={[-2.5, 5, 5]} angle={Math.PI / 3} penumbra={0.5} castShadow shadow-mapSize-height={2048} shadow-mapSize-width={2048} intensity={Math.PI * 50} />
+            <Environment preset="forest" background />
+            <Eve />
+            <OrbitControls />
+            <axesHelper args={[5]} />
+            <gridHelper />
+            <Stats />
+          </Canvas>
+        </div>
+      </Suspense>
+      <div id="instructions">
+        <kbd>W</kbd> to walk<br />
+        <kbd>W</kbd> & <kbd>⇧ Shift</kbd> to run.<br />
+        <kbd>Space</kbd> to jump<br />
+        <kbd>Q</kbd> to fancy pose<br /><br />
+          Model from{" "}
+          <a href="https://www.mixamo.com" target="_blank" rel="nofollow noreferrer">
+            Mixamo
+          </a>
+      </div>
+    </>
   );
 }
 
